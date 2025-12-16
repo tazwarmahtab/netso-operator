@@ -1,0 +1,37 @@
+name: Daily CEO Brief (Netso)
+
+on:
+  schedule:
+    # 10:00 Asia/Dhaka = 04:00 UTC (Dhaka is UTC+6)
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate brief
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: node scripts/ceo_brief.js
+
+      - name: Commit & push brief
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ops/briefs/*.md
+          git commit -m "Daily CEO Brief" || echo "Nothing to commit"
+          git push
