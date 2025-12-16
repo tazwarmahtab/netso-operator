@@ -28,10 +28,19 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
         run: node scripts/ceo_brief.js
 
-      - name: Commit & push brief
+            - name: Commit & push brief
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add ops/briefs/*.md
-          git commit -m "Daily CEO Brief" || echo "Nothing to commit"
+
+          # make sure folder exists
+          mkdir -p ops/briefs
+
+          # stage safely (won't error if empty)
+          git add -A ops/briefs
+
+          # if nothing staged, exit cleanly
+          git diff --cached --quiet && echo "Nothing to commit" && exit 0
+
+          git commit -m "Daily CEO Brief"
           git push
