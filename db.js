@@ -59,10 +59,10 @@ function authScreen(){
 async function bootNetso(){
   const session=await netsoSession();
   if(!session){authScreen();return;}
+  if(typeof seedNetsoOnce === 'function') await seedNetsoOnce();
   await loadNetsoData(); render();
 }
 
-const originalNewTask = window.newTask;
 window.newTask = async function(){
   const session=await netsoSession(); if(!session){authScreen();return;}
   const name=prompt('New task name'); if(!name)return;
