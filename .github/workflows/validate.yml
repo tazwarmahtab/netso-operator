@@ -1,15 +1,44 @@
 name: Validate NETSO OS
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check required files
-        run: test -f index.html && test -f app.js && test -f styles.css && test -f vercel.json
-      - name: Validate JavaScript syntax
-        run: node --check app.js
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate required production files
+        run: |
+          test -f package.json
+          test -f app/layout.tsx
+          test -f app/page.tsx
+          test -f lib/supabase.ts
+          test -f supabase/schema.sql
+          test -f vercel.json
+
+      - name: Check for service-role credentials
+        run: |
+          if grep -RniE 'service_role|SUPABASE_SERVICE_ROLE_KEY' --exclude-dir=.git --exclude='*.lock' .; then
+            echo 'Service-role credential reference found in source tree.'
+            exit 1
+          fi
+
+      - name: Run architecture tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
