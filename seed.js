@@ -23,4 +23,3 @@ async function seedNetsoOnce(){
     {provider_name:'Investor capital',provider_type:'Equity / SAFE',stage:'CONTACTED',next_action:'Finalize investor one-pager and deck',evidence_level:'TBD'}
   ]);
 }
-window.addEventListener('load',async()=>{await new Promise(r=>setTimeout(r,250));await seedNetsoOnce();});
