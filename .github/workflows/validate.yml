@@ -1,0 +1,15 @@
+name: Validate NETSO OS
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check required files
+        run: test -f index.html && test -f app.js && test -f styles.css && test -f vercel.json
+      - name: Validate JavaScript syntax
+        run: node --check app.js
