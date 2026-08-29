@@ -33,6 +33,9 @@ jobs:
         run: |
           ! git grep -nE 'SUPABASE_SERVICE_ROLE_KEY|service_role' -- ':!tests/architecture.test.js' ':!*.md' ':!.github/workflows/validate.yml'
 
+      - name: Typecheck
+        run: npm run typecheck
+
       - name: Run architecture tests
         run: npm test
 
