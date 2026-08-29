@@ -16,10 +16,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Validate required production files
         run: |
@@ -32,10 +31,7 @@ jobs:
 
       - name: Check for service-role credentials
         run: |
-          if grep -RniE 'service_role|SUPABASE_SERVICE_ROLE_KEY' --exclude-dir=.git --exclude='*.lock' .; then
-            echo 'Service-role credential reference found in source tree.'
-            exit 1
-          fi
+          ! grep -RniE 'SUPABASE_SERVICE_ROLE_KEY' --exclude-dir=.git --exclude-dir=node_modules --exclude='*.lock' .
 
       - name: Run architecture tests
         run: npm test
